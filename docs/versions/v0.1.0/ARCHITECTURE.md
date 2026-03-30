@@ -1,10 +1,8 @@
 # Runtime AI Security Agent: Architecture Design
 
-**Version:** 0.1.0  
+**Version:** 0.1  
 **Date:** 2026-03-30  
-**Status:** Active  
-**Previous Versions:** None (initial release)  
-**Next Version:** [0.2.0 (planned)](docs/ARCHITECTURE-HISTORY.md#version-020-planned---llm-integration)  
+**Status:** Design  
 
 ---
 

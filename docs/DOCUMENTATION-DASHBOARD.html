@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime AI Security - Documentation & Testing Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1419;
+            --bg-card: #1a1f2b;
+            --accent: #00d9ff;
+            --accent-dim: #0088aa;
+            --success: #00ff88;
+            --warning: #ffcc00;
+            --text: #e6e8eb;
+            --text-dim: #8891a0;
+            --border: #2d3545;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1f2b 0%, #0f1419 100%);
+            padding: 2.5rem 2rem;
+            border-bottom: 3px solid var(--accent);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+        }
+        
+        h2 {
+            font-size: 1.6rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,217,255,0.15);
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+        }
+        
+        .card-content {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .badge-success { background: rgba(0,255,136,0.2); color: var(--success); }
+        .badge-warning { background: rgba(255,204,0,0.2); color: var(--warning); }
+        .badge-info { background: rgba(0,217,255,0.2); color: var(--accent); }
+        
+        ul {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+        
+        li {
+            padding: 0.3rem 0;
+            padding-left: 1.2rem;
+            position: relative;
+        }
+        
+        li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+        
+        code {
+            font-family: 'Fira Code', monospace;
+            background: rgba(0,217,255,0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+        
+        .diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        pre {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: var(--accent);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--bg-card);
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .metric {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>\n    <div class=\"header\">\n        <h1>Runtime AI Security Platform</h1>\n        <div class=\"subtitle\">Documentation & Testing Strategy Dashboard</div>\n    </div>\n\n    <div class=\"container\">\n        <section class=\"section\">\n            <h2>Documentation System Status</h2>\n            <div class=\"metric-grid\">\n                <div class=\"metric\">\n                    <div class=\"metric-value\">12+</div>\n                    <div class=\"metric-label\">Doc Files</div>\n                </div>\n                <div class=\"metric\">\n                    <div class=\"metric-value\">4</div>\n                    <div class=\"metric-label\">Auto Scripts</div>\n                </div>\n                <div class=\"metric\">\n                    <div class=\"metric-value\">100%</div>\n                    <div class=\"metric-label\">Validated</div>\n                </div>\n                <div class=\"metric\">\n                    <div class=\"metric-value\">18</div>\n                    <div class=\"metric-label\">Go Files</div>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"section\">\n            <h2>Architecture (v0.1.0)</h2>\n            <div class=\"diagram\">\n                <pre>┌─────────────────────────────────────────────────────────────┐\n│  ENDPOINT (Developer Machine)                               │\n│                                                             │\n│  ┌──────────────────┐       ┌─────────────────────────┐   │\n│  │  IDE / AI Tools  │──────>│  Runtime AI Agent       │   │\n│  └──────────────────┘       │  • Scanners             │   │\n│  ┌──────────────────┐       │  • Policy Engine        │   │\n│  │  Package Mgrs    │──────>│  • Event Transport      │   │\n│  └──────────────────┘       └──────────┬──────────────┘   │\n│                                        │ TLS              │\n└────────────────────────────────────────┼──────────────────┘\n                                         │\n                                         v\n┌─────────────────────────────────────────────────────────────┐\n│  CLOUD CONTROL PLANE                                        │\n│                                                             │\n│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐   │\n│  │  Ingestion  │─>│   Analysis   │─>│  SIEM Export    │   │\n│  │     API     │  │  (Rules)     │  │   (OCSF 1.8.0)  │   │\n│  └─────────────┘  └──────────────┘  └─────────────────┘   │\n│         │                  │                  │             │\n│         v                  v                  v             │\n│  ┌──────────────────────────────────────────────────────┐  │\n│  │           PostgreSQL (Events, Policies)               │  │\n│  └──────────────────────────────────────────────────────┘  │\n└─────────────────────────────────────────────────────────────┘\n                         │\n                         v\n              ┌──────────────────────┐\n              │  SIEM/XDR            │\n              │  • XSIAM • Wiz       │\n              └──────────────────────┘</pre>\n            </div>\n        </section>\n\n        <section class=\"section\">\n            <h2>Documentation Files</h2>\n            <div class=\"grid\">\n                <div class=\"card\">\n                    <div class=\"card-title\">📖 Core Docs</div>\n                    <span class=\"badge badge-success\">Complete</span>\n                    <div class=\"card-content\">\n                        <ul>\n                            <li>README.md</li>\n                            <li>ARCHITECTURE.md</li>\n                            <li>CHANGELOG.md</li>\n                            <li>CONTRIBUTING.md</li>\n                        </ul>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">🚀 Setup Guides</div>\n                    <span class=\"badge badge-success\">Complete</span>\n                    <div class=\"card-content\">\n                        <ul>\n                            <li>INSTALLATION.md</li>\n                            <li>DEPLOYMENT.md</li>\n                            <li>LOCAL-TESTING.md</li>\n                        </ul>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">📋 Reference</div>\n                    <span class=\"badge badge-success\">Complete</span>\n                    <div class=\"card-content\">\n                        <ul>\n                            <li>API.md</li>\n                            <li>SCHEMAS.md</li>\n                            <li>OCSF-EXAMPLES.md</li>\n                            <li>INDEX.md</li>\n                        </ul>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">📊 Project Tracking</div>\n                    <span class=\"badge badge-success\">Active</span>\n                    <div class=\"card-content\">\n                        <ul>\n                            <li>PROJECT-SUMMARY.md</li>\n                            <li>BUILD-STATUS.md</li>\n                            <li>TEST-RESULTS.md</li>\n                            <li>TESTING-PLAN.md</li>\n                        </ul>\n                    </div>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"section\">\n            <h2>LLM Testing Strategy</h2>\n            <table>\n                <thead>\n                    <tr>\n                        <th>Model</th>\n                        <th>Provider</th>\n                        <th>Size</th>\n                        <th>Latency</th>\n                        <th>Use Case</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr>\n                        <td><code>qwen2.5-coder:7b</code></td>\n                        <td>Ollama</td>\n                        <td>4.1GB</td>\n                        <td>~1s</td>\n                        <td>Code analysis (RECOMMENDED)</td>\n                    </tr>\n                    <tr>\n                        <td><code>qwen2.5-auditor</code></td>\n                        <td>Ollama</td>\n                        <td>4.7GB</td>\n                        <td>~1s</td>\n                        <td>Security review (taint analysis)</td>\n                    </tr>\n                    <tr>\n                        <td><code>mistral:7b-instruct</code></td>\n                        <td>Ollama</td>\n                        <td>4.1GB</td>\n                        <td>~1s</td>\n                        <td>General purpose, reliable</td>\n                    </tr>\n                    <tr>\n                        <td><code>siem-llama-3.1</code></td>\n                        <td>Ollama</td>\n                        <td>4.7GB</td>\n                        <td>~1s</td>\n                        <td>Security events, SIEM logs</td>\n                    </tr>\n                    <tr>\n                        <td><code>malwi</code></td>\n                        <td>HuggingFace</td>\n                        <td>100MB</td>\n                        <td>~500ms</td>\n                        <td>Python malware (offline)</td>\n                    </tr>\n                </tbody>\n            </table>\n        </section>\n\n        <section class=\"section\">\n            <h2>Automation Scripts</h2>\n            <div class=\"grid\">\n                <div class=\"card\">\n                    <div class=\"card-title\">🤖 generate-diagram.py</div>\n                    <span class=\"badge badge-success\">Working</span>\n                    <div class=\"card-content\">\n                        <p>Auto-generates architecture diagrams from codebase structure.</p>\n                        <div style=\"margin-top: 1rem; background: rgba(0,217,255,0.05); padding: 0.75rem; border-radius: 4px;\">\n                            <code>make docs-generate</code>\n                        </div>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">✓ validate-docs.sh</div>\n                    <span class=\"badge badge-success\">Working</span>\n                    <div class=\"card-content\">\n                        <p>Validates doc consistency, links, versions.</p>\n                        <div style=\"margin-top: 1rem; background: rgba(0,217,255,0.05); padding: 0.75rem; border-radius: 4px;\">\n                            <code>make docs-validate</code>\n                        </div>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">📝 update-changelog.sh</div>\n                    <span class=\"badge badge-info\">Ready</span>\n                    <div class=\"card-content\">\n                        <p>Generates CHANGELOG from git commits.</p>\n                        <div style=\"margin-top: 1rem; background: rgba(0,217,255,0.05); padding: 0.75rem; border-radius: 4px;\">\n                            <code>make docs-changelog</code>\n                        </div>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">🔄 auto-update-docs.sh</div>\n                    <span class=\"badge badge-info\">Ready</span>\n                    <div class=\"card-content\">\n                        <p>Git hook for automatic doc updates.</p>\n                        <div style=\"margin-top: 1rem; background: rgba(0,217,255,0.05); padding: 0.75rem; border-radius: 4px;\">\n                            <code>ln -s ../../.cursor/skills/documentation-expert/scripts/auto-update-docs.sh .git/hooks/post-commit</code>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"section\">\n            <h2>Test Status</h2>\n            <div class=\"grid\" style=\"grid-template-columns: repeat(2, 1fr);\">\n                <div class=\"card\">\n                    <div class=\"card-title\">✅ Working Now</div>\n                    <div class=\"card-content\">\n                        <ul>\n                            <li>Mock cloud server running</li>\n                            <li>Agent connects successfully</li>\n                            <li>Events submitted (3 test cases)</li>\n                            <li>Dashboard accessible</li>\n                            <li>Documentation validated</li>\n                        </ul>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">⏳ Next Phase</div>\n                    <span class=\"badge badge-warning\">LLM Integration</span>\n                    <div class=\"card-content\">\n                        <ul>\n                            <li>Install Ollama locally</li>\n                            <li>Pull qwen2.5-coder model</li>\n                            <li>Add LLM analysis module</li>\n                            <li>Create malicious fixtures</li>\n                            <li>Run comprehensive tests</li>\n                        </ul>\n                    </div>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"section\">\n            <h2>Quick Commands</h2>\n            <div class=\"grid\" style=\"grid-template-columns: repeat(3, 1fr);\">\n                <div class=\"card\">\n                    <div class=\"card-title\">Build</div>\n                    <div class=\"card-content\">\n                        <code>make all</code>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">Test</div>\n                    <div class=\"card-content\">\n                        <code>make test</code>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">Generate Docs</div>\n                    <div class=\"card-content\">\n                        <code>make docs-generate</code>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">Validate Docs</div>\n                    <div class=\"card-content\">\n                        <code>make docs-validate</code>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">Version Snapshot</div>\n                    <div class=\"card-content\">\n                        <code>make docs-version</code>\n                    </div>\n                </div>\n                <div class=\"card\">\n                    <div class=\"card-title\">Integration Test</div>\n                    <div class=\"card-content\">\n                        <code>./test/integration-test.sh</code>\n                    </div>\n                </div>\n            </div>\n        </section>\n\n        <footer style=\"margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-dim);\">\n            <p><strong>Runtime AI Security Platform</strong> v0.1.0</p>\n            <p style=\"margin-top: 0.5rem;\">Documentation system: <span style=\"color: var(--accent);\">documentation-expert skill</span></p>\n            <p style=\"margin-top: 0.5rem; font-size: 0.9rem;\">Generated: March 30, 2026</p>\n        </footer>\n    </div>\n</body>\n</html>

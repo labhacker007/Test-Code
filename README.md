@@ -48,6 +48,30 @@ Package/IDE/AI hooks   PostgreSQL            OCSF Events → XSIAM/Wiz
 └── .cursor/skills/          # Security expert skills
 ```
 
+## Documentation
+
+📚 **[Complete Documentation Index](docs/INDEX.md)**
+
+**Quick Links**:
+- 🏗️ [Architecture Design](ARCHITECTURE.md) - System design and components
+- 📋 [API Reference](docs/API.md) - REST endpoints and integration
+- 📐 [Data Schemas](docs/SCHEMAS.md) - Event and policy formats
+- 🚀 [Installation Guide](docs/INSTALLATION.md) - Install on endpoints
+- 🚢 [Deployment Guide](docs/DEPLOYMENT.md) - Production setup
+- 🧪 [Testing Plan](docs/TESTING-PLAN.md) - Test strategy with LLM integration
+- 📜 [Changelog](CHANGELOG.md) - Version history and changes
+- 🏛️ [Architecture History](docs/ARCHITECTURE-HISTORY.md) - Design evolution
+
+**Documentation System**:
+- ✅ Auto-updating diagrams (`make docs-generate`)
+- ✅ Validation checks (`make docs-validate`)
+- ✅ Version snapshots (`make docs-version`)
+- ✅ Living documentation (stays current with code)
+
+See [Documentation System Details](docs/DOCUMENTATION-SYSTEM.md)
+
+---
+
 ## Quick Start
 
 ### Prerequisites

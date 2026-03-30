@@ -1,6 +1,6 @@
 # Makefile for Runtime AI Security Platform
 
-.PHONY: all build-agent build-cloud test clean install docker-build docker-up help
+.PHONY: all build-agent build-cloud test clean install docker-build docker-up docs help
 
 # Variables
 AGENT_BINARY := runtime-ai-agent
@@ -30,6 +30,11 @@ help:
 	@echo "  make test               Run all tests"
 	@echo "  make test-agent         Run agent tests"
 	@echo "  make test-cloud         Run cloud tests"
+	@echo ""
+	@echo "Documentation:"
+	@echo "  make docs-generate      Generate architecture diagrams"
+	@echo "  make docs-validate      Validate documentation"
+	@echo "  make docs-version       Create version snapshot"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make clean              Remove build artifacts"
@@ -106,8 +111,30 @@ deps:
 	cd agent && go mod download
 	cd cloud && go mod download
 
+# Documentation
+docs-generate:
+	@echo "Generating architecture diagrams..."
+	python3 .cursor/skills/documentation-expert/scripts/generate-diagram.py > docs/ARCHITECTURE-AUTO.md
+	@echo "Generated: docs/ARCHITECTURE-AUTO.md"
+
+docs-validate:
+	@echo "Validating documentation..."
+	bash .cursor/skills/documentation-expert/scripts/validate-docs.sh
+
+docs-version:
+	@echo "Creating version $(VERSION) snapshot..."
+	mkdir -p docs/versions/v$(VERSION)
+	cp ARCHITECTURE.md docs/versions/v$(VERSION)/
+	cp docs/API.md docs/versions/v$(VERSION)/ 2>/dev/null || true
+	echo "Created: $(shell date)" > docs/versions/v$(VERSION)/VERSION_INFO.md
+	@echo "Snapshot saved to docs/versions/v$(VERSION)/"
+
+docs-changelog:
+	@echo "Updating CHANGELOG from git history..."
+	bash .cursor/skills/documentation-expert/scripts/update-changelog.sh $(VERSION)
+
 # Release
-release: clean build-agent-all build-cloud
+release: clean build-agent-all build-cloud docs-version
 	@echo "Creating release artifacts..."
 	cd $(BUILD_DIR) && sha256sum * > checksums.txt
 	@echo "Release artifacts ready in $(BUILD_DIR)/"
