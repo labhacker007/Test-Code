@@ -572,7 +572,7 @@ npm install malicious-test-package
 
 | Service | Port | Purpose | Health Check |
 |---------|------|---------|--------------|
-| frontend | 3000 | React dashboard | http://localhost:3000 |
+| frontend | 3001 | React dashboard | http://localhost:3001 |
 | cloud-api | 8080 | Cloud control plane | http://localhost:8080/health |
 | runtime-agent | 9090 | Security agent | Internal |
 | mock-registry | 4873 | npm mock | http://localhost:4873 |

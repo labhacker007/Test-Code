@@ -33,7 +33,7 @@ Professional SOC dashboard inspired by **MEDUSA**, **Vigil AI SOC**, and **Senti
 - Zustand (state management)
 - WebSocket (real-time)
 
-**Access**: `http://localhost:3000`
+**Access**: `http://localhost:3001`
 
 ---
 
@@ -45,7 +45,7 @@ cd deployment/docker
 docker-compose -f docker-compose.simulation.yml up -d
 
 # Access dashboard
-open http://localhost:3000
+open http://localhost:3001
 
 # Run automated tests
 docker-compose -f docker-compose.simulation.yml --profile testing up test-runner
@@ -54,7 +54,7 @@ docker-compose -f docker-compose.simulation.yml --profile testing up test-runner
 ```
 
 **Services**:
-- Frontend: http://localhost:3000
+- Frontend: http://localhost:3001
 - Cloud API: http://localhost:8080
 - Mock Registry: http://localhost:4873
 - Ollama: http://localhost:11434
@@ -281,4 +281,4 @@ Test coding/
 
 ---
 
-**Ready to test!** Start the simulation environment and open the dashboard at `http://localhost:3000`.
+**Ready to test!** Start the simulation environment and open the dashboard at `http://localhost:3001`.

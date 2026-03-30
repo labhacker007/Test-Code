@@ -250,7 +250,7 @@ docker-compose -f docker-compose.simulation.yml --profile testing up test-runner
 cd frontend
 npm install
 npm run dev
-# Open http://localhost:3000
+# Open http://localhost:3001
 
 # 4. Run integration tests
 ./test/integration-test.sh
@@ -331,7 +331,7 @@ docker exec -it simulation-ollama-1 ollama pull qwen2.5-coder:7b
 docker-compose -f docker-compose.simulation.yml --profile testing up test-runner
 
 # Open dashboard
-open http://localhost:3000
+open http://localhost:3001
 
 # Watch real-time events
 # Frontend automatically connects via WebSocket
@@ -353,7 +353,7 @@ go run ./cmd/api
 cd frontend
 npm install  # First time only
 npm run dev
-# Opens http://localhost:3000
+# Opens http://localhost:3001
 
 # Terminal 3: Agent (optional)
 ./dist/runtime-ai-agent \
@@ -514,7 +514,7 @@ docker-compose -f docker-compose.simulation.yml up -d
 # Check health
 docker-compose -f docker-compose.simulation.yml ps
 curl http://localhost:8080/health
-curl http://localhost:3000  # Should return HTML
+curl http://localhost:3001  # Should return HTML
 
 # Pull Ollama model
 docker exec -it simulation-ollama-1 ollama pull qwen2.5-coder:7b
@@ -538,7 +538,7 @@ docker-compose -f docker-compose.simulation.yml --profile testing up test-runner
 ### Access Dashboard
 
 ```bash
-open http://localhost:3000
+open http://localhost:3001
 
 # You'll see:
 # - Real-time metrics updating
@@ -651,7 +651,7 @@ docker-compose -f docker-compose.simulation.yml --profile testing up test-runner
 
 **Step 4**: Open dashboard
 ```bash
-open http://localhost:3000
+open http://localhost:3001
 ```
 
 **Step 5**: Manual testing
@@ -718,7 +718,7 @@ vim agent/internal/scanner/ai.go (use new analyzer)
 - Only mimics, no actual malicious code
 - Docker isolated environment
 
-**🎯 Ready to test**: Start Docker simulation and explore dashboard at `http://localhost:3000`
+**🎯 Ready to test**: Start Docker simulation and explore dashboard at `http://localhost:3001`
 
 ---
 

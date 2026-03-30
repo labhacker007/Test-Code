@@ -46,7 +46,7 @@ Services Running:
 - Chart.js + Zustand
 - WebSocket real-time
 
-**Access**: http://localhost:3000
+**Access**: http://localhost:3001
 
 ---
 
@@ -157,7 +157,7 @@ docker exec -it simulation-ollama-1 ollama pull qwen2.5-coder:7b
 docker-compose -f docker-compose.simulation.yml --profile testing up test-runner
 
 # 4. Open dashboard
-open http://localhost:3000
+open http://localhost:3001
 ```
 
 **What you'll see**:
@@ -184,7 +184,7 @@ npm install requsets
 npm install lodash
 # Expected: ✅ ALLOWED (in allowlist)
 
-# View in dashboard at http://localhost:3000
+# View in dashboard at http://localhost:3001
 ```
 
 ---
@@ -200,7 +200,7 @@ go run ./cmd/api
 cd frontend
 npm install  # First time
 npm run dev
-# Opens http://localhost:3000
+# Opens http://localhost:3001
 
 # Terminal 3: Tests
 ./test/integration-test.sh
@@ -275,7 +275,7 @@ npm run dev
 ```bash
 cd deployment/docker
 docker-compose -f docker-compose.simulation.yml up -d
-open http://localhost:3000
+open http://localhost:3001
 ```
 
 **Option 2: Frontend Only** (if Docker issues)
@@ -283,7 +283,7 @@ open http://localhost:3000
 cd frontend
 npm install
 npm run dev
-# Opens http://localhost:3000
+# Opens http://localhost:3001
 # Falls back to demo data
 ```
 
@@ -377,7 +377,7 @@ docker exec -it simulation-ollama-1 ollama pull qwen2.5-coder:7b
 
 ### Dashboard View
 
-When you open http://localhost:3000, you'll see:
+When you open http://localhost:3001, you'll see:
 
 ```
 ╔═══════════════════════════════════════════════════════════╗
@@ -458,14 +458,14 @@ curl http://localhost:8080/health
 # Expected: {"status":"healthy","version":"0.1.0"}
 
 # Test frontend
-curl http://localhost:3000
+curl http://localhost:3001
 # Expected: HTML page
 ```
 
 ### Step 3: Open Dashboard
 
 ```bash
-open http://localhost:3000
+open http://localhost:3001
 ```
 
 **You'll see**:
@@ -697,7 +697,7 @@ docker exec -it simulation-test-app-1 npm install requsets
 
 ### 2. Manage Rules
 
-**In dashboard** (http://localhost:3000):
+**In dashboard** (http://localhost:3001):
 - Navigate to "Detection" tab
 - View 15 loaded rules
 - Enable/disable rules
