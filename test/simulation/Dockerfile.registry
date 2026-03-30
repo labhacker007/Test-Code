@@ -1,0 +1,14 @@
+# Mock Registry Dockerfile
+# Verdaccio - private npm registry for testing
+
+FROM verdaccio/verdaccio:latest
+
+# Add test packages
+COPY test-packages/ /verdaccio/storage/
+
+# Default config allows all packages
+USER verdaccio
+
+EXPOSE 4873
+
+CMD ["verdaccio"]

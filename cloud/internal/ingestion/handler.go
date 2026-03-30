@@ -15,6 +15,9 @@ type Handler struct {
 	store        *storage.EventStore
 	analyzer     *analysis.Analyzer
 	ocsfExporter *ocsf.Exporter
+	wsHub        interface {
+		BroadcastEvent(eventType string, data interface{})
+	}
 }
 
 func NewHandler(store *storage.EventStore, analyzer *analysis.Analyzer, exporter *ocsf.Exporter) *Handler {
@@ -23,6 +26,10 @@ func NewHandler(store *storage.EventStore, analyzer *analysis.Analyzer, exporter
 		analyzer:     analyzer,
 		ocsfExporter: exporter,
 	}
+}
+
+func (h *Handler) SetWebSocketHub(hub interface{ BroadcastEvent(string, interface{}) }) {
+	h.wsHub = hub
 }
 
 type EventBatchRequest struct {
@@ -39,10 +46,15 @@ func (h *Handler) HandleEvents(c *gin.Context) {
 
 	log.Printf("Received %d events from agent %s", len(req.Events), req.AgentID)
 
-	// Store events
+	// Store events and broadcast to WebSocket clients
 	for _, event := range req.Events {
 		if err := h.store.StoreEvent(req.AgentID, event); err != nil {
 			log.Printf("Error storing event: %v", err)
+		}
+
+		// Broadcast to WebSocket clients for real-time UI
+		if h.wsHub != nil {
+			h.wsHub.BroadcastEvent("new_event", event)
 		}
 
 		// Analyze if verdict is uncertain

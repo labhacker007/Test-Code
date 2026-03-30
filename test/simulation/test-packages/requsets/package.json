@@ -1,0 +1,12 @@
+{
+  "name": "requsets",
+  "version": "2.31.0",
+  "description": "SAFE TEST PACKAGE - Typosquat mimic of 'requests' (Python equivalent in npm)",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "author": "test",
+  "license": "MIT",
+  "keywords": ["test", "simulation", "typosquat"]
+}

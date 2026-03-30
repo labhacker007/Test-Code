@@ -1,0 +1,35 @@
+# Dockerfile for Agent in Simulation Mode
+FROM golang:1.23-alpine AS builder
+
+WORKDIR /build
+
+# Copy agent source
+COPY agent/go.mod agent/go.sum ./
+RUN go mod download
+
+COPY agent/ ./
+
+# Build with simulation features enabled
+RUN CGO_ENABLED=0 go build \
+    -ldflags="-s -w -X main.version=0.1.0-sim" \
+    -tags simulation \
+    -o runtime-ai-agent \
+    ./cmd/agent
+
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /app
+
+COPY --from=builder /build/runtime-ai-agent .
+
+# Expose agent API for inspection
+EXPOSE 9090
+
+# Health check
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost:9090/health || exit 1
+
+ENTRYPOINT ["./runtime-ai-agent"]
+CMD ["--cloud-endpoint=http://cloud-api:8080", "--mode=blocking", "--log-level=debug", "--api-port=9090"]

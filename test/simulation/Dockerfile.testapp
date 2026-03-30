@@ -1,0 +1,22 @@
+# Test Application Dockerfile
+# Simulates a developer environment for testing agent
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install both npm and pip for testing
+RUN apk add --no-cache python3 py3-pip bash curl wget git
+
+# Create test project
+COPY scenarios/ /scenarios/
+
+# Set up npm to use mock registry
+RUN npm config set registry http://mock-registry:4873/
+
+# Create workspace
+RUN mkdir -p /workspace
+WORKDIR /workspace
+
+# Keep container alive for testing
+CMD ["sleep", "infinity"]

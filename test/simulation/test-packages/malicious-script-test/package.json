@@ -1,0 +1,11 @@
+{
+  "name": "malicious-script-test",
+  "version": "1.0.0",
+  "description": "SAFE TEST PACKAGE - Contains suspicious install script patterns",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "author": "test",
+  "license": "MIT"
+}

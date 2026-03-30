@@ -1,0 +1,12 @@
+# Test Runner Dockerfile
+FROM alpine:latest
+
+RUN apk add --no-cache bash curl jq
+
+WORKDIR /app
+
+COPY test-runner.sh /app/
+
+RUN chmod +x /app/test-runner.sh
+
+CMD ["/app/test-runner.sh"]

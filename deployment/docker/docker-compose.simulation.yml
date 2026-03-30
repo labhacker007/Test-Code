@@ -1,0 +1,148 @@
+# Docker Simulation Environment
+# Safe testing environment for Runtime AI Security Platform
+
+services:
+  # Mock package registry (npm-like)
+  mock-registry:
+    build:
+      context: ../../test/simulation
+      dockerfile: Dockerfile.registry
+    ports:
+      - "4873:4873"  # Verdaccio npm registry
+    environment:
+      - REGISTRY_TYPE=npm
+    volumes:
+      - ./test-packages:/verdaccio/storage
+    networks:
+      - testnet
+
+  # Test application (victim)
+  test-app:
+    build:
+      context: ../../test/simulation
+      dockerfile: Dockerfile.testapp
+    environment:
+      - NPM_REGISTRY=http://mock-registry:4873
+      - AGENT_ENDPOINT=http://runtime-agent:9090
+    volumes:
+      - ../../test/simulation/scenarios:/scenarios:ro
+    depends_on:
+      - mock-registry
+      - runtime-agent
+    networks:
+      - testnet
+    command: /bin/bash -c "sleep infinity"  # Keep alive for manual testing
+
+  # Runtime AI Security Agent
+  runtime-agent:
+    build:
+      context: ../..
+      dockerfile: agent/Dockerfile.simulation
+    environment:
+      - CLOUD_ENDPOINT=http://cloud-api:8080
+      - MODE=blocking
+      - LOG_LEVEL=debug
+    ports:
+      - "9090:9090"  # Agent API for inspection
+    volumes:
+      - ./test-policies:/policies:ro
+    depends_on:
+      cloud-api:
+        condition: service_healthy
+    networks:
+      - testnet
+
+  # PostgreSQL (cloud storage)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: runtime_ai_security
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: changeme_test_only
+    volumes:
+      - sim-postgres-data:/var/lib/postgresql/data
+    networks:
+      - testnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Cloud API
+  cloud-api:
+    build:
+      context: ../..
+      dockerfile: cloud/Dockerfile
+    environment:
+      DATABASE_URL: postgres://admin:changeme_test_only@postgres:5432/runtime_ai_security?sslmode=disable
+      LISTEN_ADDR: :8080
+      LOG_LEVEL: debug
+      ENABLE_WEBSOCKET: "true"  # For real-time frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - testnet
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Modern Frontend Dashboard
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+      - VITE_WS_URL=ws://localhost:8080/ws
+    depends_on:
+      - cloud-api
+    networks:
+      - testnet
+
+  # Ollama (Local LLM)
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    networks:
+      - testnet
+    command: serve
+
+  # Test Runner (Automated scenarios)
+  test-runner:
+    build:
+      context: ../../test/simulation
+      dockerfile: Dockerfile.runner
+    environment:
+      - TARGET_APP=test-app
+      - AGENT_API=http://runtime-agent:9090
+      - CLOUD_API=http://cloud-api:8080
+    volumes:
+      - ../../test/simulation/scenarios:/scenarios:ro
+      - ./results:/results
+    depends_on:
+      - test-app
+      - runtime-agent
+      - cloud-api
+    networks:
+      - testnet
+    profiles:
+      - testing  # Only start with --profile testing
+
+volumes:
+  sim-postgres-data:
+  ollama-models:
+
+networks:
+  testnet:
+    driver: bridge

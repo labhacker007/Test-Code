@@ -13,6 +13,7 @@ import (
 	"github.com/labhacker007/Test-Code/cloud/internal/ingestion"
 	"github.com/labhacker007/Test-Code/cloud/internal/analysis"
 	"github.com/labhacker007/Test-Code/cloud/internal/storage"
+	"github.com/labhacker007/Test-Code/cloud/internal/websocket"
 	"github.com/labhacker007/Test-Code/cloud/pkg/ocsf"
 )
 
@@ -32,9 +33,14 @@ func main() {
 	eventStore := storage.NewEventStore(db)
 	analyzer := analysis.NewAnalyzer()
 	ocsfExporter := ocsf.NewExporter()
+	
+	// Initialize WebSocket hub for real-time updates
+	hub := websocket.NewHub()
+	go hub.Run()
 
 	// Initialize ingestion handler
 	ingestionHandler := ingestion.NewHandler(eventStore, analyzer, ocsfExporter)
+	ingestionHandler.SetWebSocketHub(hub)
 
 	// Setup HTTP server
 	router := gin.Default()
@@ -58,6 +64,9 @@ func main() {
 		integration.POST("/webhook/xsiam", ingestionHandler.HandleXSIAMWebhook)
 		integration.POST("/webhook/wiz", ingestionHandler.HandleWizWebhook)
 	}
+	
+	// WebSocket endpoint for real-time updates
+	router.GET("/ws", websocket.HandleWebSocket(hub))
 
 	srv := &http.Server{
 		Addr:    ":8080",
