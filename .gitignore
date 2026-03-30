@@ -1,1 +1,46 @@
+# Binaries
+dist/
+bin/
+*.exe
+runtime-ai-agent
+cloud-api
+
+# Go
+*.so
+*.dylib
+vendor/
+
+# Testing
+*.test
+*.out
+coverage.txt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Config (sensitive)
+config.local.yaml
+*.pem
+*.key
+!deployment/**/*.key
+
+# Database
+*.db
+*.sqlite
+
+# Temporary
+tmp/
+temp/
+.cache/

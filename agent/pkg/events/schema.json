@@ -1,0 +1,252 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Event Schema",
+  "description": "Internal event format for endpoint agent to cloud communication",
+  "type": "object",
+  "required": ["version", "event_type", "timestamp", "agent_id", "device", "data"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^1\\.0$",
+      "description": "Schema version"
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "package_install",
+        "extension_install",
+        "extension_activate",
+        "ai_tool_call",
+        "file_access",
+        "network_connection",
+        "process_exec",
+        "verdict_request",
+        "agent_heartbeat"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp"
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "Unique agent identifier (persistent per endpoint)"
+    },
+    "agent_version": {
+      "type": "string",
+      "description": "Agent software version"
+    },
+    "device": {
+      "type": "object",
+      "required": ["hostname", "os"],
+      "properties": {
+        "hostname": {
+          "type": "string"
+        },
+        "os": {
+          "type": "string",
+          "enum": ["darwin", "linux", "windows"]
+        },
+        "os_version": {
+          "type": "string"
+        },
+        "arch": {
+          "type": "string",
+          "enum": ["amd64", "arm64", "386"]
+        },
+        "user": {
+          "type": "string",
+          "description": "OS username"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "Event-specific payload (varies by event_type)",
+      "oneOf": [
+        {"$ref": "#/definitions/PackageInstallData"},
+        {"$ref": "#/definitions/ExtensionData"},
+        {"$ref": "#/definitions/AIToolCallData"},
+        {"$ref": "#/definitions/FileAccessData"},
+        {"$ref": "#/definitions/NetworkConnectionData"},
+        {"$ref": "#/definitions/ProcessExecData"}
+      ]
+    },
+    "verdict": {
+      "type": "object",
+      "description": "Local agent verdict (if decided locally)",
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": ["allow", "deny", "uncertain"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reason": {
+          "type": "string"
+        },
+        "rule_id": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PackageInstallData": {
+      "type": "object",
+      "required": ["ecosystem", "package_name", "version"],
+      "properties": {
+        "ecosystem": {
+          "type": "string",
+          "enum": ["npm", "pip", "gem", "cargo", "go"]
+        },
+        "package_name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "registry": {
+          "type": "string",
+          "description": "Registry URL"
+        },
+        "hash": {
+          "type": "object",
+          "properties": {
+            "algorithm": {"type": "string", "enum": ["sha256", "sha512"]},
+            "value": {"type": "string"}
+          }
+        },
+        "install_script": {
+          "type": "object",
+          "properties": {
+            "present": {"type": "boolean"},
+            "hash": {"type": "string"},
+            "suspicious_patterns": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "ExtensionData": {
+      "type": "object",
+      "required": ["ide", "extension_id", "version"],
+      "properties": {
+        "ide": {
+          "type": "string",
+          "enum": ["vscode", "cursor", "windsurf"]
+        },
+        "extension_id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "marketplace": {
+          "type": "string",
+          "enum": ["vscode", "openvsx", "cursor", "sideload"]
+        },
+        "permissions": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "activation_events": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "AIToolCallData": {
+      "type": "object",
+      "required": ["tool_name", "client"],
+      "properties": {
+        "client": {
+          "type": "string",
+          "enum": ["copilot", "cursor", "mcp", "cline", "other"]
+        },
+        "tool_name": {
+          "type": "string"
+        },
+        "args": {
+          "type": "object",
+          "description": "Redacted/sanitized tool arguments"
+        },
+        "context_hash": {
+          "type": "string",
+          "description": "Hash of input context (for prompt injection detection)"
+        }
+      }
+    },
+    "FileAccessData": {
+      "type": "object",
+      "required": ["path", "operation"],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string",
+          "enum": ["read", "write", "delete"]
+        },
+        "process": {
+          "type": "string",
+          "description": "Process name that accessed the file"
+        },
+        "is_sensitive": {
+          "type": "boolean",
+          "description": "Matches sensitive path pattern (.ssh, .aws, etc.)"
+        }
+      }
+    },
+    "NetworkConnectionData": {
+      "type": "object",
+      "required": ["destination", "port"],
+      "properties": {
+        "destination": {
+          "type": "string",
+          "description": "IP or domain"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "protocol": {
+          "type": "string",
+          "enum": ["tcp", "udp"]
+        },
+        "process": {
+          "type": "string"
+        }
+      }
+    },
+    "ProcessExecData": {
+      "type": "object",
+      "required": ["command"],
+      "properties": {
+        "command": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "parent_process": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

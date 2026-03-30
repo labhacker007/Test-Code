@@ -1,0 +1,387 @@
+{
+  "version": "1.0",
+  "policy_id": "default-detection-rules-v1",
+  "issued_at": "2026-03-30T00:00:00Z",
+  "expires_at": "2027-03-30T00:00:00Z",
+  "mode": "permissive",
+  "rules": [
+    {
+      "id": "TYPOSQUAT_NPM_REACT",
+      "name": "Typosquatting: React",
+      "description": "Detects typosquatting attempts against React package",
+      "severity": "high",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.ecosystem",
+          "operator": "equals",
+          "value": "npm"
+        },
+        {
+          "field": "data.package_name",
+          "operator": "matches",
+          "value": "^(reac|reactt|raect|react-|react_).*$"
+        }
+      ],
+      "action": "deny",
+      "metadata": {
+        "mitre_attack": ["T1195.002"],
+        "references": ["https://arxiv.org/pdf/2506.14466"]
+      }
+    },
+    {
+      "id": "TYPOSQUAT_PIP_REQUESTS",
+      "name": "Typosquatting: Requests",
+      "description": "Detects typosquatting attempts against requests package",
+      "severity": "high",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.ecosystem",
+          "operator": "equals",
+          "value": "pip"
+        },
+        {
+          "field": "data.package_name",
+          "operator": "matches",
+          "value": "^(requ|requestss|requsets|request_).*$"
+        }
+      ],
+      "action": "deny",
+      "metadata": {
+        "mitre_attack": ["T1195.002"],
+        "references": []
+      }
+    },
+    {
+      "id": "INSTALL_SCRIPT_CURL_EVAL",
+      "name": "Suspicious Install Script: Curl + Eval",
+      "description": "Install script contains curl/wget combined with eval",
+      "severity": "critical",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.install_script.suspicious_patterns",
+          "operator": "in",
+          "value": ["curl", "wget"]
+        },
+        {
+          "field": "data.install_script.suspicious_patterns",
+          "operator": "in",
+          "value": ["eval", "base64"]
+        }
+      ],
+      "action": "deny",
+      "metadata": {
+        "mitre_attack": ["T1059.004", "T1027"],
+        "references": ["https://dev.to/xygenisecurity/litellm-supply-chain-attack"]
+      }
+    },
+    {
+      "id": "INSTALL_SCRIPT_SSH_ACCESS",
+      "name": "Credential Access: SSH",
+      "description": "Install script attempts to access SSH directory",
+      "severity": "critical",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.install_script.suspicious_patterns",
+          "operator": "in",
+          "value": [".ssh"]
+        }
+      ],
+      "action": "deny",
+      "metadata": {
+        "mitre_attack": ["T1552.004"],
+        "references": []
+      }
+    },
+    {
+      "id": "INSTALL_SCRIPT_AWS_CREDS",
+      "name": "Credential Access: AWS",
+      "description": "Install script attempts to access AWS credentials",
+      "severity": "critical",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.install_script.suspicious_patterns",
+          "operator": "in",
+          "value": [".aws"]
+        }
+      ],
+      "action": "deny",
+      "metadata": {
+        "mitre_attack": ["T1552.001"],
+        "references": []
+      }
+    },
+    {
+      "id": "INSTALL_SCRIPT_TOKEN_ACCESS",
+      "name": "Credential Access: GitHub Token",
+      "description": "Install script attempts to access GitHub token",
+      "severity": "critical",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.install_script.suspicious_patterns",
+          "operator": "in",
+          "value": ["GITHUB_TOKEN"]
+        }
+      ],
+      "action": "deny",
+      "metadata": {
+        "mitre_attack": ["T1552.001"],
+        "references": []
+      }
+    },
+    {
+      "id": "EXTENSION_WILDCARD_ACTIVATION",
+      "name": "Risky Extension: Wildcard Activation",
+      "description": "Extension activates on all events (*)",
+      "severity": "medium",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "event_type",
+          "operator": "equals",
+          "value": "extension_install"
+        },
+        {
+          "field": "data.activation_events",
+          "operator": "in",
+          "value": ["*"]
+        }
+      ],
+      "action": "alert",
+      "metadata": {
+        "mitre_attack": ["T1176"],
+        "references": ["https://dev.to/ishaan_agrawal/many-vscode-extensions-are-malicious"]
+      }
+    },
+    {
+      "id": "EXTENSION_SIDELOAD",
+      "name": "Extension Sideloaded",
+      "description": "Extension installed from outside official marketplace",
+      "severity": "medium",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.marketplace",
+          "operator": "equals",
+          "value": "sideload"
+        }
+      ],
+      "action": "alert",
+      "metadata": {
+        "mitre_attack": ["T1195.002"],
+        "references": []
+      }
+    },
+    {
+      "id": "EXTENSION_NETWORK_FILESYSTEM",
+      "name": "Risky Extension: Network + Filesystem",
+      "description": "Extension has both network and filesystem permissions",
+      "severity": "medium",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.permissions",
+          "operator": "in",
+          "value": ["network"]
+        },
+        {
+          "field": "data.permissions",
+          "operator": "in",
+          "value": ["filesystem"]
+        }
+      ],
+      "action": "alert",
+      "metadata": {
+        "mitre_attack": ["T1005", "T1041"],
+        "references": []
+      }
+    },
+    {
+      "id": "AI_TOOL_SHELL_EXEC",
+      "name": "AI Tool: Shell Execution",
+      "description": "AI tool attempting shell command execution",
+      "severity": "high",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "event_type",
+          "operator": "equals",
+          "value": "ai_tool_call"
+        },
+        {
+          "field": "data.tool_name",
+          "operator": "in",
+          "value": ["shell_exec", "execute_command", "run_command", "bash"]
+        }
+      ],
+      "action": "alert",
+      "metadata": {
+        "mitre_attack": ["T1059"],
+        "references": ["https://genai.owasp.org/"]
+      }
+    },
+    {
+      "id": "NETWORK_PASTEBIN",
+      "name": "Network: Pastebin Exfiltration",
+      "description": "Connection to known pastebin services",
+      "severity": "high",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "event_type",
+          "operator": "equals",
+          "value": "network_connection"
+        },
+        {
+          "field": "data.destination",
+          "operator": "matches",
+          "value": ".*(pastebin\\.com|paste\\.ee|hastebin|dpaste|ghostbin).*"
+        }
+      ],
+      "action": "deny",
+      "metadata": {
+        "mitre_attack": ["T1041"],
+        "references": []
+      }
+    },
+    {
+      "id": "FILE_ACCESS_SSH_KEY",
+      "name": "Credential Access: SSH Private Key",
+      "description": "Unauthorized access to SSH private key",
+      "severity": "critical",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "event_type",
+          "operator": "equals",
+          "value": "file_access"
+        },
+        {
+          "field": "data.path",
+          "operator": "matches",
+          "value": ".*\\.ssh/id_(rsa|ed25519|ecdsa)$"
+        },
+        {
+          "field": "data.is_sensitive",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action": "deny",
+      "metadata": {
+        "mitre_attack": ["T1552.004"],
+        "references": []
+      }
+    },
+    {
+      "id": "OBFUSCATION_BASE64_HEAVY",
+      "name": "Code Obfuscation: Heavy Base64",
+      "description": "Excessive base64 usage indicating obfuscation",
+      "severity": "high",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.install_script.suspicious_patterns",
+          "operator": "in",
+          "value": ["base64"]
+        }
+      ],
+      "action": "alert",
+      "metadata": {
+        "mitre_attack": ["T1027"],
+        "references": ["https://www.bleepingcomputer.com/news/security/glassworm-malware"]
+      }
+    },
+    {
+      "id": "BLOCKCHAIN_C2",
+      "name": "Blockchain C2 Communication",
+      "description": "Connection to blockchain RPC endpoints (potential C2)",
+      "severity": "critical",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "event_type",
+          "operator": "equals",
+          "value": "network_connection"
+        },
+        {
+          "field": "data.destination",
+          "operator": "matches",
+          "value": ".*(solana|ethereum|rpc|infura|alchemy).*"
+        }
+      ],
+      "action": "alert",
+      "metadata": {
+        "mitre_attack": ["T1071.001"],
+        "references": ["https://dev.to/ohmygod/blockchain-as-c2-infrastructure"]
+      }
+    },
+    {
+      "id": "DESTRUCTIVE_COMMAND",
+      "name": "Destructive Command in Install",
+      "description": "Install script contains potentially destructive commands",
+      "severity": "high",
+      "enabled": true,
+      "conditions": [
+        {
+          "field": "data.install_script.suspicious_patterns",
+          "operator": "in",
+          "value": ["rm -rf"]
+        }
+      ],
+      "action": "alert",
+      "metadata": {
+        "mitre_attack": ["T1485"],
+        "references": []
+      }
+    }
+  ],
+  "allowlist": {
+    "packages": [
+      {"ecosystem": "npm", "name": "react"},
+      {"ecosystem": "npm", "name": "vue"},
+      {"ecosystem": "npm", "name": "angular"},
+      {"ecosystem": "npm", "name": "lodash"},
+      {"ecosystem": "npm", "name": "express"},
+      {"ecosystem": "npm", "name": "axios"},
+      {"ecosystem": "npm", "name": "typescript"},
+      {"ecosystem": "npm", "name": "webpack"},
+      {"ecosystem": "npm", "name": "eslint"},
+      {"ecosystem": "npm", "name": "prettier"},
+      {"ecosystem": "pip", "name": "requests"},
+      {"ecosystem": "pip", "name": "numpy"},
+      {"ecosystem": "pip", "name": "pandas"},
+      {"ecosystem": "pip", "name": "django"},
+      {"ecosystem": "pip", "name": "flask"},
+      {"ecosystem": "pip", "name": "pytest"},
+      {"ecosystem": "pip", "name": "black"},
+      {"ecosystem": "pip", "name": "mypy"}
+    ],
+    "hashes": [],
+    "domains": [
+      "registry.npmjs.org",
+      "pypi.org",
+      "pypi.python.org",
+      "files.pythonhosted.org"
+    ]
+  },
+  "denylist": {
+    "packages": [
+      {
+        "ecosystem": "npm",
+        "name": "evil-lodash",
+        "reason": "Known malicious typosquat",
+        "reference": "internal-incident-2026-001"
+      }
+    ],
+    "hashes": [],
+    "domains": [
+      "malicious-cdn.example.com"
+    ]
+  }
+}

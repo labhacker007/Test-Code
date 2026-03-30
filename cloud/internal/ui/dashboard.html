@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime AI Security - SOC Dashboard</title>
+    <style>
+        :root {
+            --bg-dark: #0a0e27;
+            --bg-card: #141b3a;
+            --accent-critical: #ff3366;
+            --accent-high: #ff8c42;
+            --accent-medium: #ffd93d;
+            --accent-low: #6bcf7f;
+            --text-primary: #e8ecf5;
+            --text-secondary: #8b95b0;
+            --border: #1f2847;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-critical), var(--accent-high));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: var(--accent-low);
+            color: var(--bg-dark);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(255, 51, 102, 0.15);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .metric-critical { color: var(--accent-critical); }
+        .metric-high { color: var(--accent-high); }
+        .metric-medium { color: var(--accent-medium); }
+        .metric-low { color: var(--accent-low); }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--accent-critical), var(--accent-high));
+            border-radius: 2px;
+        }
+
+        .event-table {
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .severity-critical {
+            background: var(--accent-critical);
+            color: white;
+        }
+
+        .severity-high {
+            background: var(--accent-high);
+            color: white;
+        }
+
+        .severity-medium {
+            background: var(--accent-medium);
+            color: var(--bg-dark);
+        }
+
+        .severity-low {
+            background: var(--accent-low);
+            color: var(--bg-dark);
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-approve {
+            background: var(--accent-low);
+            color: var(--bg-dark);
+        }
+
+        .btn-deny {
+            background: var(--accent-critical);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
+        }
+
+        .btn-deny:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 51, 102, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .timestamp {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .agent-id {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-medium);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Runtime AI Security</h1>
+            <div class="status-badge">System Operational</div>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Active Agents</div>
+                <div class="metric-value metric-low" id="active-agents">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Events (24h)</div>
+                <div class="metric-value metric-low" id="events-24h">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Critical Alerts</div>
+                <div class="metric-value metric-critical" id="critical-alerts">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Blocked Threats</div>
+                <div class="metric-value metric-high" id="blocked-threats">0</div>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2 class="section-title">Pending Approvals</h2>
+            <div class="event-table">
+                <table id="pending-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Agent</th>
+                            <th>Type</th>
+                            <th>Package/Extension</th>
+                            <th>Severity</th>
+                            <th>Reason</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending-body">
+                        <tr>
+                            <td colspan="7" class="empty-state">No pending approvals</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Recent Alerts</h2>
+            <div class="event-table">
+                <table id="alerts-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Agent</th>
+                            <th>Event Type</th>
+                            <th>Severity</th>
+                            <th>Description</th>
+                            <th>Verdict</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alerts-body">
+                        <tr>
+                            <td colspan="6" class="empty-state">No recent alerts</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Mock data for demonstration
+        const mockData = {
+            metrics: {
+                activeAgents: 42,
+                events24h: 15234,
+                criticalAlerts: 3,
+                blockedThreats: 127
+            },
+            pendingApprovals: [
+                {
+                    timestamp: '2026-03-30T17:23:45Z',
+                    agentId: 'agent-mac-dev-001',
+                    type: 'package_install',
+                    name: 'requsets',
+                    severity: 'high',
+                    reason: 'Typosquat candidate (requests)'
+                }
+            ],
+            recentAlerts: [
+                {
+                    timestamp: '2026-03-30T17:20:12Z',
+                    agentId: 'agent-linux-ci-042',
+                    eventType: 'file_access',
+                    severity: 'critical',
+                    description: 'SSH key access by npm package',
+                    verdict: 'denied'
+                },
+                {
+                    timestamp: '2026-03-30T17:15:33Z',
+                    agentId: 'agent-mac-dev-003',
+                    eventType: 'extension_install',
+                    severity: 'medium',
+                    description: 'Sideloaded extension with network permissions',
+                    verdict: 'alerted'
+                }
+            ]
+        };
+
+        function updateMetrics() {
+            document.getElementById('active-agents').textContent = mockData.metrics.activeAgents;
+            document.getElementById('events-24h').textContent = mockData.metrics.events24h.toLocaleString();
+            document.getElementById('critical-alerts').textContent = mockData.metrics.criticalAlerts;
+            document.getElementById('blocked-threats').textContent = mockData.metrics.blockedThreats;
+        }
+
+        function renderPendingApprovals() {
+            const tbody = document.getElementById('pending-body');
+            if (mockData.pendingApprovals.length === 0) {
+                return;
+            }
+
+            tbody.innerHTML = mockData.pendingApprovals.map(item => `
+                <tr>
+                    <td><span class="timestamp">${formatTime(item.timestamp)}</span></td>
+                    <td><span class="agent-id">${item.agentId}</span></td>
+                    <td>${item.type}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td><span class="severity-badge severity-${item.severity}">${item.severity}</span></td>
+                    <td>${item.reason}</td>
+                    <td>
+                        <button class="action-btn btn-approve" onclick="approve('${item.name}')">Approve</button>
+                        <button class="action-btn btn-deny" onclick="deny('${item.name}')">Deny</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderRecentAlerts() {
+            const tbody = document.getElementById('alerts-body');
+            if (mockData.recentAlerts.length === 0) {
+                return;
+            }
+
+            tbody.innerHTML = mockData.recentAlerts.map(item => `
+                <tr>
+                    <td><span class="timestamp">${formatTime(item.timestamp)}</span></td>
+                    <td><span class="agent-id">${item.agentId}</span></td>
+                    <td>${item.eventType}</td>
+                    <td><span class="severity-badge severity-${item.severity}">${item.severity}</span></td>
+                    <td>${item.description}</td>
+                    <td>${item.verdict}</td>
+                </tr>
+            `).join('');
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
+        }
+
+        function approve(name) {
+            alert(`Approved: ${name}`);
+            // TODO: API call to update policy allowlist
+        }
+
+        function deny(name) {
+            alert(`Denied: ${name}`);
+            // TODO: API call to update policy denylist
+        }
+
+        // Initialize dashboard
+        updateMetrics();
+        renderPendingApprovals();
+        renderRecentAlerts();
+
+        // Auto-refresh every 5 seconds
+        setInterval(() => {
+            // TODO: Fetch real data from API
+            console.log('Refreshing dashboard data...');
+        }, 5000);
+    </script>
+</body>
+</html>

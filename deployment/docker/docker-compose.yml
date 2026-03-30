@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: runtime_ai_security
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: changeme
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cloud-api:
+    build:
+      context: ../..
+      dockerfile: cloud/Dockerfile
+    environment:
+      DATABASE_URL: postgres://admin:changeme@postgres:5432/runtime_ai_security?sslmode=disable
+      LISTEN_ADDR: :8080
+      LOG_LEVEL: info
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  dashboard:
+    image: nginx:alpine
+    volumes:
+      - ../../cloud/internal/ui:/usr/share/nginx/html:ro
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
