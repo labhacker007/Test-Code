@@ -49,6 +49,14 @@ func main() {
 	transport := transport.NewTransport(cfg.CloudEndpoint, cfg.AgentID, version)
 	log.Println("Event transport initialized")
 
+	// Check if running in test mode
+	if os.Getenv("AGENT_MODE") == "test" {
+		log.Println("🧪 Starting in TEST MODE - Test API only, no system hooks")
+		testServer := NewTestServer(policyEngine)
+		log.Fatal(testServer.Start())
+		return
+	}
+
 	// Initialize scanner modules
 	packageScanner := scanner.NewPackageScanner(policyEngine, transport)
 	extensionScanner := scanner.NewExtensionScanner(policyEngine, transport)

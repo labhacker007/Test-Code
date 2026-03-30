@@ -49,128 +49,150 @@ export default function PreventionControls() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl">
-      <div>
-        <h1 className="text-xl font-semibold text-text-primary">Prevention controls</h1>
-        <p className="text-sm text-text-secondary mt-1">
-          Policy posture, allow/deny surfaces, emergency stop, and quarantine review (NeMo-style
-          rails + runtime blocking).
+    <div className="max-w-6xl space-y-8 animate-fade-in">
+      <header className="page-header">
+        <h1 className="page-title">Prevention controls</h1>
+        <p className="page-subtitle">
+          Policy posture, allow/deny surfaces, emergency stop, and quarantine review (NeMo-style rails
+          + runtime blocking).
         </p>
-      </div>
+      </header>
 
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid gap-4 md:grid-cols-3 md:gap-5">
         {modes.map((m) => (
           <button
             key={m.id}
             type="button"
             onClick={() => void applyMode(m.id)}
             className={clsx(
-              'text-left card p-4 border-2 transition-all',
-              policy.mode === m.id ? 'border-primary bg-primary/5' : 'border-border',
+              'group text-left rounded-2xl border bg-bg-card/80 p-5 transition-all duration-250 ease-smooth',
+              'shadow-panel-sm hover:shadow-panel',
+              policy.mode === m.id
+                ? 'border-primary/50 bg-primary/8 ring-1 ring-primary/25 shadow-glow-primary'
+                : 'border-border-subtle hover:border-border/60',
             )}
           >
-            <div className="flex items-center gap-2 mb-1">
-              <Shield className="w-4 h-4 text-primary" aria-hidden />
-              <span className="font-semibold text-text-primary">{m.label}</span>
+            <div className="mb-2 flex items-center gap-2.5">
+              <span
+                className={clsx(
+                  'flex h-9 w-9 items-center justify-center rounded-lg ring-1 transition-colors',
+                  policy.mode === m.id
+                    ? 'bg-primary/15 ring-primary/25'
+                    : 'bg-bg-elevated/80 ring-border-subtle group-hover:bg-bg-elevated',
+                )}
+              >
+                <Shield
+                  className={clsx(
+                    'h-4 w-4',
+                    policy.mode === m.id ? 'text-primary' : 'text-text-muted',
+                  )}
+                  aria-hidden
+                />
+              </span>
+              <span className="font-semibold tracking-tight text-text-primary">{m.label}</span>
             </div>
-            <p className="text-xs text-text-secondary">{m.hint}</p>
+            <p className="text-xs leading-relaxed text-text-muted">{m.hint}</p>
           </button>
         ))}
       </div>
 
-      <div className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-danger/40">
-        <div>
-          <h2 className="text-sm font-semibold text-danger flex items-center gap-2">
-            <AlertOctagon className="w-4 h-4" aria-hidden />
+      <div className="card flex flex-col gap-5 border-rose-500/20 bg-gradient-to-br from-rose-500/5 to-transparent p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 md:p-6">
+        <div className="min-w-0 space-y-1.5">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-rose-400">
+            <AlertOctagon className="h-4 w-4 shrink-0" aria-hidden />
             Emergency block
           </h2>
-          <p className="text-xs text-text-secondary mt-1 max-w-xl">
-            Immediately short-circuit risky traffic paths across all agents. Use during active
-            incident response.
+          <p className="max-w-xl text-xs leading-relaxed text-text-muted">
+            Immediately short-circuit risky traffic paths across all agents. Use during active incident
+            response.
           </p>
         </div>
         <button
           type="button"
           onClick={() => void flipEmergency()}
           className={clsx(
-            'px-5 py-3 rounded-lg font-semibold text-sm shrink-0 transition-colors',
+            'shrink-0 rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-250',
             policy.emergencyBlock
-              ? 'bg-success/20 text-success border border-success/50'
-              : 'bg-danger text-white hover:bg-danger/90',
+              ? 'border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15'
+              : 'bg-rose-500 text-white shadow-lg shadow-rose-500/25 hover:bg-rose-400 hover:shadow-rose-400/30',
           )}
         >
           {policy.emergencyBlock ? 'Lift emergency' : 'Activate emergency block'}
         </button>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="card p-4">
-          <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
-            <CheckCircle2 className="w-4 h-4 text-success" aria-hidden />
+      <div className="grid gap-5 md:grid-cols-2 md:gap-6">
+        <div className="card p-5 md:p-6">
+          <h3 className="mb-4 flex items-center gap-2.5 text-sm font-semibold tracking-tight text-text-primary">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 ring-1 ring-emerald-500/20">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" aria-hidden />
+            </span>
             Allowlist
           </h3>
-          <form onSubmit={onAllowSubmit} className="flex gap-2 mb-3">
+          <form onSubmit={onAllowSubmit} className="mb-4 flex gap-2">
             <input
-              className="flex-1 bg-bg-secondary border border-border rounded-lg px-3 py-2 text-sm font-mono"
+              className="input-field flex-1 font-mono text-sm"
               placeholder="host or pattern"
               value={listAllowInput}
               onChange={(e) => setListAllowInput(e.target.value)}
             />
-            <button type="submit" className="btn-primary flex items-center gap-1">
-              <ListPlus className="w-4 h-4" />
+            <button type="submit" className="btn-primary shrink-0 px-4">
+              <ListPlus className="h-4 w-4" />
               Add
             </button>
           </form>
-          <ul className="space-y-1.5 text-sm">
+          <ul className="space-y-2 text-sm">
             {policy.allowlist.map((x) => (
               <li
                 key={x}
-                className="flex items-center justify-between gap-2 font-mono text-xs bg-bg-secondary rounded px-2 py-1.5 border border-border"
+                className="flex items-center justify-between gap-3 rounded-xl border border-border-subtle bg-bg-secondary/60 px-3 py-2.5 font-mono text-xs transition-colors hover:bg-bg-elevated/50"
               >
-                <span className="text-text-primary truncate">{x}</span>
+                <span className="truncate text-text-primary">{x}</span>
                 <button
                   type="button"
-                  className="text-text-secondary hover:text-danger shrink-0"
+                  className="shrink-0 rounded-lg p-1 text-text-muted transition-colors hover:bg-rose-500/10 hover:text-rose-400"
                   onClick={() => removeAllow(x)}
                   aria-label={`Remove ${x}`}
                 >
-                  <Ban className="w-3.5 h-3.5" />
+                  <Ban className="h-3.5 w-3.5" />
                 </button>
               </li>
             ))}
           </ul>
         </div>
-        <div className="card p-4">
-          <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
-            <Ban className="w-4 h-4 text-danger" aria-hidden />
+        <div className="card p-5 md:p-6">
+          <h3 className="mb-4 flex items-center gap-2.5 text-sm font-semibold tracking-tight text-text-primary">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/10 ring-1 ring-rose-500/20">
+              <Ban className="h-4 w-4 text-rose-400" aria-hidden />
+            </span>
             Denylist
           </h3>
-          <form onSubmit={onDenySubmit} className="flex gap-2 mb-3">
+          <form onSubmit={onDenySubmit} className="mb-4 flex gap-2">
             <input
-              className="flex-1 bg-bg-secondary border border-border rounded-lg px-3 py-2 text-sm font-mono"
+              className="input-field flex-1 font-mono text-sm"
               placeholder="host or pattern"
               value={listDenyInput}
               onChange={(e) => setListDenyInput(e.target.value)}
             />
-            <button type="submit" className="btn-danger flex items-center gap-1">
-              <ListPlus className="w-4 h-4" />
+            <button type="submit" className="btn-danger shrink-0 px-4">
+              <ListPlus className="h-4 w-4" />
               Add
             </button>
           </form>
-          <ul className="space-y-1.5 text-sm">
+          <ul className="space-y-2 text-sm">
             {policy.denylist.map((x) => (
               <li
                 key={x}
-                className="flex items-center justify-between gap-2 font-mono text-xs bg-bg-secondary rounded px-2 py-1.5 border border-border"
+                className="flex items-center justify-between gap-3 rounded-xl border border-border-subtle bg-bg-secondary/60 px-3 py-2.5 font-mono text-xs transition-colors hover:bg-bg-elevated/50"
               >
-                <span className="text-text-primary truncate">{x}</span>
+                <span className="truncate text-text-primary">{x}</span>
                 <button
                   type="button"
-                  className="text-text-secondary hover:text-danger shrink-0"
+                  className="shrink-0 rounded-lg p-1 text-text-muted transition-colors hover:bg-rose-500/10 hover:text-rose-400"
                   onClick={() => removeDeny(x)}
                   aria-label={`Remove ${x}`}
                 >
-                  <Ban className="w-3.5 h-3.5" />
+                  <Ban className="h-3.5 w-3.5" />
                 </button>
               </li>
             ))}
@@ -178,32 +200,37 @@ export default function PreventionControls() {
         </div>
       </div>
 
-      <div className="card p-4">
-        <h3 className="text-sm font-semibold text-text-primary mb-3">Quarantine queue</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-left text-xs uppercase text-text-secondary border-b border-border">
+      <div className="table-shell overflow-hidden">
+        <div className="border-b border-border-subtle bg-bg-secondary/40 px-5 py-4">
+          <h3 className="text-sm font-semibold tracking-tight text-text-primary">Quarantine queue</h3>
+        </div>
+        <div className="scrollbar-thin overflow-x-auto">
+          <table className="w-full min-w-[720px] text-sm">
+            <thead className="table-header-row text-left text-2xs font-semibold uppercase tracking-wider text-text-muted">
               <tr>
-                <th className="py-2 pr-3">Time</th>
-                <th className="py-2 pr-3">Agent</th>
-                <th className="py-2 pr-3">Reason</th>
-                <th className="py-2 pr-3">Preview</th>
-                <th className="py-2 pr-3">Status</th>
-                <th className="py-2 pr-3">Actions</th>
+                <th className="px-5 py-3 font-medium">Time</th>
+                <th className="px-5 py-3 font-medium">Agent</th>
+                <th className="px-5 py-3 font-medium">Reason</th>
+                <th className="px-5 py-3 font-medium">Preview</th>
+                <th className="px-5 py-3 font-medium">Status</th>
+                <th className="px-5 py-3 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {quarantine.map((q) => (
-                <tr key={q.id} className="border-b border-border/60">
-                  <td className="py-2 pr-3 font-mono text-xs text-text-secondary whitespace-nowrap">
+                <tr
+                  key={q.id}
+                  className="border-b border-border-subtle/60 transition-colors hover:bg-bg-elevated/35"
+                >
+                  <td className="whitespace-nowrap px-5 py-3 font-mono text-xs text-text-muted">
                     {format(q.ts, 'MMM d HH:mm')}
                   </td>
-                  <td className="py-2 pr-3 font-mono text-xs">{q.agentId}</td>
-                  <td className="py-2 pr-3 max-w-[200px] truncate">{q.reason}</td>
-                  <td className="py-2 pr-3 font-mono text-[10px] text-text-secondary max-w-[240px] truncate">
+                  <td className="px-5 py-3 font-mono text-xs text-text-secondary">{q.agentId}</td>
+                  <td className="max-w-[200px] truncate px-5 py-3">{q.reason}</td>
+                  <td className="max-w-[240px] truncate px-5 py-3 font-mono text-[11px] text-text-muted">
                     {q.payloadPreview}
                   </td>
-                  <td className="py-2 pr-3">
+                  <td className="px-5 py-3">
                     <span
                       className={clsx(
                         'badge',
@@ -215,32 +242,34 @@ export default function PreventionControls() {
                       {q.status}
                     </span>
                   </td>
-                  <td className="py-2 pr-3 flex flex-wrap gap-1">
-                    {q.status === 'pending' && (
-                      <>
-                        <button
-                          type="button"
-                          className="text-xs px-2 py-1 rounded border border-success/50 text-success hover:bg-success/10"
-                          onClick={() => updateQuarantineStatus(q.id, 'released')}
-                        >
-                          Release
-                        </button>
-                        <button
-                          type="button"
-                          className="text-xs px-2 py-1 rounded border border-danger/50 text-danger hover:bg-danger/10"
-                          onClick={() => updateQuarantineStatus(q.id, 'blocked')}
-                        >
-                          Block
-                        </button>
-                      </>
-                    )}
+                  <td className="px-5 py-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      {q.status === 'pending' && (
+                        <>
+                          <button
+                            type="button"
+                            className="rounded-lg border border-emerald-500/35 px-2.5 py-1 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/10"
+                            onClick={() => updateQuarantineStatus(q.id, 'released')}
+                          >
+                            Release
+                          </button>
+                          <button
+                            type="button"
+                            className="rounded-lg border border-rose-500/35 px-2.5 py-1 text-xs font-medium text-rose-400 transition-colors hover:bg-rose-500/10"
+                            onClick={() => updateQuarantineStatus(q.id, 'blocked')}
+                          >
+                            Block
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
           {quarantine.length === 0 && (
-            <p className="text-sm text-text-secondary py-6 text-center">Quarantine is empty.</p>
+            <p className="py-10 text-center text-sm text-text-muted">Quarantine is empty.</p>
           )}
         </div>
       </div>

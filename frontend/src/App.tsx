@@ -37,29 +37,37 @@ function Shell() {
 
   return (
     <div className="min-h-screen flex bg-bg-primary">
-      <aside className="w-56 shrink-0 border-r border-border bg-bg-secondary/80 backdrop-blur-sm flex flex-col">
-        <div className="p-4 border-b border-border">
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="w-8 h-8 text-primary" aria-hidden />
+      <aside className="w-60 shrink-0 flex flex-col border-r border-border-subtle bg-bg-secondary/95 backdrop-blur-xl">
+        <div className="p-5 border-b border-border-subtle">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20">
+              <ShieldAlert className="h-5 w-5 text-primary" aria-hidden />
+            </div>
             <div>
-              <p className="text-xs uppercase tracking-widest text-text-secondary">Runtime AI</p>
-              <p className="font-semibold text-text-primary leading-tight">Security Platform</p>
+              <p className="text-2xs font-semibold uppercase tracking-widest text-text-muted">
+                Runtime AI
+              </p>
+              <p className="font-semibold text-text-primary leading-tight tracking-tight">
+                Security Platform
+              </p>
             </div>
           </div>
-          <div className="mt-3 flex items-center gap-2 text-xs">
+          <div className="mt-4 flex items-center gap-2.5 rounded-xl bg-bg-tertiary/80 px-3 py-2 ring-1 ring-border-subtle">
             <span
               className={clsx(
-                'inline-flex h-2 w-2 rounded-full',
-                wsConnected ? 'bg-success shadow-[0_0_8px_#00ff88]' : 'bg-warning animate-pulse',
+                'inline-flex h-2 w-2 rounded-full transition-shadow duration-500',
+                wsConnected
+                  ? 'bg-emerald-400 shadow-glow-success'
+                  : 'bg-amber-400 animate-pulse-soft',
               )}
               aria-hidden
             />
-            <span className="text-text-secondary">
-              {wsConnected ? 'Live stream' : 'Reconnecting / demo'}
+            <span className="text-xs text-text-secondary">
+              {wsConnected ? 'Live stream connected' : 'Reconnecting / demo'}
             </span>
           </div>
         </div>
-        <nav className="flex-1 p-2 space-y-0.5">
+        <nav className="flex-1 p-3 space-y-1">
           {nav.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
@@ -67,31 +75,40 @@ function Shell() {
               end={end}
               className={({ isActive }) =>
                 clsx(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                  'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-250 ease-smooth',
                   isActive
-                    ? 'bg-bg-card text-primary border border-primary/40'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-card/60',
+                    ? 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25'
+                    : 'text-text-secondary hover:bg-bg-elevated/80 hover:text-text-primary',
                 )
               }
             >
-              <Icon className="w-4 h-4 shrink-0 opacity-90" aria-hidden />
+              <Icon
+                className="h-4 w-4 shrink-0 opacity-90 transition-transform duration-250 group-hover:scale-105"
+                aria-hidden
+              />
               {label}
             </NavLink>
           ))}
         </nav>
-        <div className="p-4 border-t border-border text-[10px] text-text-secondary leading-relaxed">
-          Inspired by MEDUSA analyzers, Vigil SOC real-time hunting, Sentinel sub-ms indicators.
+        <div className="p-4 border-t border-border-subtle">
+          <p className="text-[10px] leading-relaxed text-text-muted">
+            MEDUSA analyzers · Vigil SOC · Sentinel-scale indicators.
+          </p>
         </div>
       </aside>
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-12 border-b border-border flex items-center justify-between px-6 bg-bg-secondary/40">
-          <div className="flex items-center gap-2 text-text-secondary text-sm">
-            <Activity className="w-4 h-4 text-primary" aria-hidden />
-            <span>Operations console</span>
+        <header className="h-14 shrink-0 border-b border-border-subtle bg-bg-secondary/40 backdrop-blur-md flex items-center justify-between px-6 md:px-8">
+          <div className="flex items-center gap-2.5 text-sm text-text-secondary">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-elevated/60 ring-1 ring-border-subtle">
+              <Activity className="h-4 w-4 text-primary" aria-hidden />
+            </span>
+            <span className="font-medium text-text-primary/90">Operations console</span>
           </div>
-          <div className="text-xs text-text-secondary font-mono">API /api → :8080/v1 · WS /ws</div>
+          <div className="hidden sm:block text-2xs font-mono text-text-muted tabular-nums">
+            API /api → :8080/v1 · WS /ws
+          </div>
         </header>
-        <main className="flex-1 overflow-auto p-4 md:p-6">
+        <main className="flex-1 overflow-auto p-5 md:p-8 scrollbar-thin">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/events" element={<EventFeed />} />

@@ -5,25 +5,34 @@ import { useStore } from '@/store/useStore'
 import ThreatTimeline from '@/components/ThreatTimeline'
 import AgentFleet from '@/components/AgentFleet'
 
+const CHART_TEXT = '#94a3b8'
+const CHART_GRID = 'rgba(30, 41, 59, 0.65)'
+const CHART_TOOLTIP_BG = '#121826'
+const CHART_TOOLTIP_BORDER = '#1e293b'
+
 const barOptions = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false },
     tooltip: {
-      backgroundColor: '#1a1f2e',
-      borderColor: '#2a3144',
+      backgroundColor: CHART_TOOLTIP_BG,
+      borderColor: CHART_TOOLTIP_BORDER,
       borderWidth: 1,
+      padding: 10,
+      cornerRadius: 8,
+      titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 },
+      bodyFont: { family: "'JetBrains Mono', monospace", size: 11 },
     },
   },
   scales: {
     x: {
       grid: { display: false },
-      ticks: { color: '#8b95b0', font: { size: 10 } },
+      ticks: { color: CHART_TEXT, font: { size: 10, family: "'JetBrains Mono', monospace" } },
     },
     y: {
-      grid: { color: 'rgba(42,49,68,0.5)' },
-      ticks: { color: '#8b95b0' },
+      grid: { color: CHART_GRID },
+      ticks: { color: CHART_TEXT, font: { size: 10 } },
       beginAtZero: true,
     },
   },
@@ -43,8 +52,9 @@ export default function Dashboard() {
         {
           label: 'Events',
           data: lastBuckets.map((p) => p.events),
-          backgroundColor: 'rgba(0,212,255,0.35)',
-          borderRadius: 4,
+          backgroundColor: 'rgba(56, 189, 248, 0.45)',
+          borderRadius: 6,
+          borderSkipped: false,
         },
       ],
     }),
@@ -52,91 +62,101 @@ export default function Dashboard() {
   )
 
   return (
-    <div className="space-y-6 max-w-7xl">
-      <div>
-        <h1 className="text-2xl font-semibold text-text-primary tracking-tight">
-          Monitoring dashboard
-        </h1>
-        <p className="text-sm text-text-secondary mt-1 max-w-2xl">
-          Real-time posture for the Runtime AI Security Platform — sub-ms detection indicators,
-          fleet health, and threat volume aligned with Sentinel-style guardrails and MEDUSA-scale rule
+    <div className="max-w-7xl space-y-8 animate-fade-in">
+      <header className="page-header">
+        <h1 className="page-title">Monitoring dashboard</h1>
+        <p className="page-subtitle">
+          Real-time posture for the Runtime AI Security Platform — sub-ms detection indicators, fleet
+          health, and threat volume aligned with Sentinel-style guardrails and MEDUSA-scale rule
           coverage.
         </p>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
         <MetricCard
           icon={Activity}
           label="Events / sec"
           value={metrics.eventsPerSec.toFixed(0)}
           hint="Live aggregate"
           accent="text-primary"
+          iconBg="bg-primary/10"
         />
         <MetricCard
           icon={Ban}
           label="Blocks / min"
           value={metrics.blocksPerMin.toFixed(0)}
           hint="Policy enforcement"
-          accent="text-danger"
+          accent="text-rose-400"
+          iconBg="bg-rose-500/10"
         />
         <MetricCard
           icon={AlertTriangle}
           label="Alerts / min"
           value={metrics.alertsPerMin.toFixed(0)}
           hint="SOC triage"
-          accent="text-warning"
+          accent="text-amber-400"
+          iconBg="bg-amber-500/10"
         />
         <MetricCard
           icon={Zap}
           label="Avg latency"
           value={`${metrics.avgLatencyMs.toFixed(2)} ms`}
           hint={`${metrics.subMsDetectionsPct.toFixed(1)}% sub-ms`}
-          accent="text-success"
+          accent="text-emerald-400"
+          iconBg="bg-emerald-500/10"
         />
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div className="xl:col-span-2 space-y-4">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <div className="space-y-6 xl:col-span-2">
           <ThreatTimeline />
-          <div className="card p-4 h-[220px] flex flex-col">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                <Gauge className="w-4 h-4 text-primary" aria-hidden />
+          <div className="card p-5 flex h-[240px] flex-col">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="flex items-center gap-2 text-sm font-semibold tracking-tight text-text-primary">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/15">
+                  <Gauge className="h-4 w-4 text-primary" aria-hidden />
+                </span>
                 Throughput (recent)
               </h3>
             </div>
-            <div className="flex-1 min-h-0">
+            <div className="min-h-0 flex-1">
               <Bar data={barData} options={barOptions} />
             </div>
           </div>
         </div>
-        <div className="space-y-4">
-          <div className="card p-4">
-            <h3 className="text-sm font-semibold text-text-primary mb-3">Detection coverage</h3>
-            <dl className="space-y-2 text-sm">
-              <div className="flex justify-between gap-2">
+        <div className="space-y-6">
+          <div className="card p-5">
+            <h3 className="mb-4 text-sm font-semibold tracking-tight text-text-primary">
+              Detection coverage
+            </h3>
+            <dl className="space-y-3 text-sm">
+              <div className="flex items-center justify-between gap-3 border-b border-border-subtle pb-3 last:border-0 last:pb-0">
                 <dt className="text-text-secondary">Active rules</dt>
-                <dd className="font-mono text-text-primary">
+                <dd className="font-mono text-sm tabular-nums text-text-primary">
                   {detectionStats.totalRules.toLocaleString()}
                 </dd>
               </div>
-              <div className="flex justify-between gap-2">
+              <div className="flex items-center justify-between gap-3 border-b border-border-subtle pb-3 last:border-0 last:pb-0">
                 <dt className="text-text-secondary">Analyzers</dt>
-                <dd className="font-mono text-text-primary">{detectionStats.activeAnalyzers}+</dd>
+                <dd className="font-mono text-sm tabular-nums text-text-primary">
+                  {detectionStats.activeAnalyzers}+
+                </dd>
               </div>
-              <div className="flex justify-between gap-2">
+              <div className="flex items-center justify-between gap-3 border-b border-border-subtle pb-3 last:border-0 last:pb-0">
                 <dt className="text-text-secondary">FP reduction</dt>
-                <dd className="font-mono text-success">{detectionStats.fpReductionPct}%</dd>
+                <dd className="font-mono text-sm tabular-nums text-emerald-400">
+                  {detectionStats.fpReductionPct}%
+                </dd>
               </div>
-              <div className="flex justify-between gap-2">
+              <div className="flex items-center justify-between gap-3 border-b border-border-subtle pb-3 last:border-0 last:pb-0">
                 <dt className="text-text-secondary">24h triggers</dt>
-                <dd className="font-mono text-text-primary">
+                <dd className="font-mono text-sm tabular-nums text-text-primary">
                   {detectionStats.triggers24h.toLocaleString()}
                 </dd>
               </div>
-              <div className="flex justify-between gap-2">
-                <dt className="text-text-secondary">Top category</dt>
-                <dd className="font-mono text-primary text-right truncate max-w-[140px]">
+              <div className="flex items-start justify-between gap-3">
+                <dt className="text-text-secondary shrink-0">Top category</dt>
+                <dd className="font-mono text-right text-xs text-primary truncate max-w-[160px]">
                   {detectionStats.topCategory}
                 </dd>
               </div>
@@ -155,21 +175,29 @@ function MetricCard({
   value,
   hint,
   accent,
+  iconBg,
 }: {
   icon: typeof Activity
   label: string
   value: string
   hint: string
   accent: string
+  iconBg: string
 }) {
   return (
-    <div className="card p-4 flex flex-col gap-1">
-      <div className="flex items-center justify-between">
-        <span className="text-xs uppercase tracking-wide text-text-secondary">{label}</span>
-        <Icon className={`w-4 h-4 ${accent}`} aria-hidden />
+    <div className="card group p-5">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-2xs font-semibold uppercase tracking-wider text-text-muted">{label}</span>
+        <span
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ring-1 ring-white/5 ${iconBg}`}
+        >
+          <Icon className={`h-4 w-4 ${accent}`} aria-hidden />
+        </span>
       </div>
-      <p className={`text-2xl font-mono font-semibold ${accent}`}>{value}</p>
-      <p className="text-[11px] text-text-secondary">{hint}</p>
+      <p className={`mt-3 font-mono text-3xl font-semibold tabular-nums tracking-tight ${accent}`}>
+        {value}
+      </p>
+      <p className="mt-1.5 text-xs text-text-muted">{hint}</p>
     </div>
   )
 }

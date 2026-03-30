@@ -55,91 +55,103 @@ export default function DetectionRules() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl">
-      <div>
-        <h1 className="text-xl font-semibold text-text-primary">Detection & rules</h1>
-        <p className="text-sm text-text-secondary mt-1">
+    <div className="max-w-6xl space-y-8 animate-fade-in">
+      <header className="page-header">
+        <h1 className="page-title">Detection & rules</h1>
+        <p className="page-subtitle">
           MEDUSA-scale catalog — enable analyzers, tune false positives, and add custom patterns.
         </p>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
         <StatBox label="Total rules (ref)" value={stats.totalRules.toLocaleString()} />
         <StatBox label="Analyzers" value={`${stats.activeAnalyzers}+`} accent="text-primary" />
-        <StatBox label="FP reduction" value={`${stats.fpReductionPct}%`} accent="text-success" />
+        <StatBox label="FP reduction" value={`${stats.fpReductionPct}%`} accent="text-emerald-400" />
         <StatBox label="24h triggers" value={stats.triggers24h.toLocaleString()} />
       </div>
 
-      <div className="card p-4">
-        <h2 className="text-sm font-semibold flex items-center gap-2 mb-4">
-          <SlidersHorizontal className="w-4 h-4 text-primary" aria-hidden />
-          Rule inventory
-        </h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-left text-xs uppercase text-text-secondary border-b border-border">
+      <div className="table-shell overflow-hidden">
+        <div className="border-b border-border-subtle bg-bg-secondary/40 px-5 py-4">
+          <h2 className="flex items-center gap-2.5 text-sm font-semibold tracking-tight text-text-primary">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/15">
+              <SlidersHorizontal className="h-4 w-4 text-primary" aria-hidden />
+            </span>
+            Rule inventory
+          </h2>
+        </div>
+        <div className="scrollbar-thin overflow-x-auto">
+          <table className="w-full min-w-[880px] text-sm">
+            <thead className="table-header-row text-left text-2xs font-semibold uppercase tracking-wider text-text-muted">
               <tr>
-                <th className="py-2 pr-3">Rule</th>
-                <th className="py-2 pr-3">Category</th>
-                <th className="py-2 pr-3">Severity</th>
-                <th className="py-2 pr-3">Patterns</th>
-                <th className="py-2 pr-3">Est. FP rate</th>
-                <th className="py-2 pr-3">State</th>
-                <th className="py-2 pr-3">False positive</th>
+                <th className="px-5 py-3 font-medium">Rule</th>
+                <th className="px-5 py-3 font-medium">Category</th>
+                <th className="px-5 py-3 font-medium">Severity</th>
+                <th className="px-5 py-3 font-medium">Patterns</th>
+                <th className="px-5 py-3 font-medium">Est. FP rate</th>
+                <th className="px-5 py-3 font-medium">State</th>
+                <th className="px-5 py-3 font-medium">False positive</th>
               </tr>
             </thead>
             <tbody>
               {rules.map((r) => (
-                <tr key={r.id} className="border-b border-border/60 hover:bg-bg-secondary/40">
-                  <td className="py-3 pr-3">
+                <tr
+                  key={r.id}
+                  className="border-b border-border-subtle/60 transition-colors duration-200 hover:bg-bg-elevated/40"
+                >
+                  <td className="px-5 py-4 align-top">
                     <p className="font-medium text-text-primary">{r.name}</p>
-                    <p className="text-xs text-text-secondary mt-0.5 line-clamp-2">{r.description}</p>
+                    <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-text-muted">
+                      {r.description}
+                    </p>
                   </td>
-                  <td className="py-3 pr-3 font-mono text-xs text-primary">{r.category}</td>
-                  <td className="py-3 pr-3">
+                  <td className="px-5 py-4 align-top font-mono text-xs text-primary">{r.category}</td>
+                  <td className="px-5 py-4 align-top">
                     <span
                       className={clsx(
                         'badge',
                         r.severity === 'critical' && 'badge-danger',
                         r.severity === 'high' && 'badge-warning',
-                        r.severity === 'medium' && 'badge-warning',
+                        r.severity === 'medium' &&
+                          'bg-sky-500/12 text-sky-300 ring-1 ring-sky-500/20',
                         r.severity === 'low' && 'badge-success',
                       )}
                     >
                       {r.severity}
                     </span>
                   </td>
-                  <td className="py-3 pr-3 font-mono text-xs">{r.patternCount ?? '—'}</td>
-                  <td className="py-3 pr-3 font-mono text-xs">
+                  <td className="px-5 py-4 align-top font-mono text-xs tabular-nums text-text-secondary">
+                    {r.patternCount ?? '—'}
+                  </td>
+                  <td className="px-5 py-4 align-top font-mono text-xs tabular-nums text-text-secondary">
                     {r.fpRate != null ? `${(r.fpRate * 100).toFixed(1)}%` : '—'}
                   </td>
-                  <td className="py-3 pr-3">
+                  <td className="px-5 py-4 align-top">
                     <button
                       type="button"
                       onClick={() => void onToggle(r.id)}
                       className={clsx(
-                        'inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium border',
+                        'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all duration-200',
                         r.enabled
-                          ? 'border-success/50 text-success bg-success/10'
-                          : 'border-border text-text-secondary',
+                          ? 'bg-emerald-500/12 text-emerald-400 ring-1 ring-emerald-500/25 hover:bg-emerald-500/18'
+                          : 'bg-bg-elevated/80 text-text-muted ring-1 ring-border-subtle hover:text-text-primary',
                       )}
                     >
-                      <Power className="w-3.5 h-3.5" />
+                      <Power className="h-3.5 w-3.5" />
                       {r.enabled ? 'Enabled' : 'Disabled'}
                     </button>
                   </td>
-                  <td className="py-3 pr-3">
+                  <td className="px-5 py-4 align-top">
                     <button
                       type="button"
                       onClick={() => setRuleFlaggedFp(r.id, !r.flaggedFp)}
                       className={clsx(
-                        'inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs border',
+                        'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs transition-all duration-200',
                         r.flaggedFp
-                          ? 'border-warning text-warning bg-warning/10'
-                          : 'border-border text-text-secondary hover:border-warning/50',
+                          ? 'bg-amber-500/12 text-amber-400 ring-1 ring-amber-500/20'
+                          : 'bg-bg-elevated/80 text-text-muted ring-1 ring-border-subtle hover:border-amber-500/30 hover:text-amber-400/90',
                       )}
                     >
-                      <Flag className="w-3.5 h-3.5" />
+                      <Flag className="h-3.5 w-3.5" />
                       {r.flaggedFp ? 'Flagged' : 'Flag FP'}
                     </button>
                   </td>
@@ -150,34 +162,36 @@ export default function DetectionRules() {
         </div>
       </div>
 
-      <div className="card p-4">
-        <h2 className="text-sm font-semibold flex items-center gap-2 mb-4">
-          <Plus className="w-4 h-4 text-primary" aria-hidden />
+      <div className="card p-5 md:p-6">
+        <h2 className="mb-6 flex items-center gap-2.5 text-sm font-semibold tracking-tight text-text-primary">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/15">
+            <Plus className="h-4 w-4 text-primary" aria-hidden />
+          </span>
           Custom rule
         </h2>
-        <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
+        <form onSubmit={onSubmit} className="grid gap-5 md:grid-cols-2">
           <div className="md:col-span-2">
-            <label className="block text-xs text-text-secondary mb-1">Name</label>
+            <label className="mb-1.5 block text-xs font-medium text-text-muted">Name</label>
             <input
               required
-              className="w-full bg-bg-secondary border border-border rounded-lg px-3 py-2 text-sm"
+              className="input-field"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Block leaked system prompt patterns"
             />
           </div>
           <div>
-            <label className="block text-xs text-text-secondary mb-1">Category</label>
+            <label className="mb-1.5 block text-xs font-medium text-text-muted">Category</label>
             <input
-              className="w-full bg-bg-secondary border border-border rounded-lg px-3 py-2 text-sm font-mono"
+              className="input-field font-mono text-sm"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             />
           </div>
           <div>
-            <label className="block text-xs text-text-secondary mb-1">Severity</label>
+            <label className="mb-1.5 block text-xs font-medium text-text-muted">Severity</label>
             <select
-              className="w-full bg-bg-secondary border border-border rounded-lg px-3 py-2 text-sm"
+              className="select-field w-full"
               value={severity}
               onChange={(e) => setSeverity(e.target.value as Severity)}
             >
@@ -188,9 +202,11 @@ export default function DetectionRules() {
             </select>
           </div>
           <div className="md:col-span-2">
-            <label className="block text-xs text-text-secondary mb-1">Description / pattern notes</label>
+            <label className="mb-1.5 block text-xs font-medium text-text-muted">
+              Description / pattern notes
+            </label>
             <textarea
-              className="w-full bg-bg-secondary border border-border rounded-lg px-3 py-2 text-sm min-h-[88px]"
+              className="input-field min-h-[100px] resize-y"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe matcher intent; backend compiles to runtime analyzers."
@@ -217,9 +233,11 @@ function StatBox({
   accent?: string
 }) {
   return (
-    <div className="card p-4">
-      <p className="text-xs text-text-secondary uppercase tracking-wide">{label}</p>
-      <p className={clsx('text-xl font-mono font-semibold mt-1', accent)}>{value}</p>
+    <div className="card p-5">
+      <p className="text-2xs font-semibold uppercase tracking-wider text-text-muted">{label}</p>
+      <p className={clsx('mt-2 font-mono text-2xl font-semibold tabular-nums tracking-tight', accent)}>
+        {value}
+      </p>
     </div>
   )
 }
